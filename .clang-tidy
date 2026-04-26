@@ -1,0 +1,40 @@
+Checks: >
+  -*,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  portability-*,
+  modernize-*,
+  readability-*
+  cppcoreguidelines-*,
+  -modernize-use-trailing-return-type,
+  -modernize-make-shared,
+  -modernize-use-nodiscard,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-identifier-naming,
+  -readability-identifier-length,
+  -modernize-avoid-c-arrays,
+  -bugprone-easily-swappable-parameters,
+  -performance-enum-size,
+  -misc-include-cleaner,
+WarningsAsErrors: ''
+HeaderFileExtensions:
+  - ''
+  - h
+  - hh
+  - hpp
+  - hxx
+ImplementationFileExtensions:
+  - c
+  - cc
+  - cpp
+  - cxx
+HeaderFilterRegex: ''
+ExcludeHeaderFilterRegex: '(extern|build)/'
+FormatStyle: none
+InheritParentConfig: true
+CheckOptions:
+  bugprone-narrowing-conversions.IgnoreConversionFromTypes: 'size_t;ptrdiff_t;size_type;difference_type'
+  bugprone-lambda-function-name.IgnoreMacros: true
+  misc-include-cleaner.IgnoreHeaders: 'compare'
