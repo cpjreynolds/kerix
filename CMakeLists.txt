@@ -23,7 +23,7 @@ option(KERIX_CHECK_COPYRIGHT "check source file copyright notices" ON)
 
 # build options
 kerix_option(DEBUG "debug features" ON)
-kerix_option(TEST "build tests" OFF)
+kerix_option(TEST "build tests" ON)
 
 set(KERIX_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tools")
 

@@ -1,15 +1,24 @@
 file(GLOB_RECURSE KERIX_HEADERS CONFIGURE_DEPENDS *.hpp)
 file(GLOB_RECURSE KERIX_SOURCES CONFIGURE_DEPENDS *.cpp)
-list(FILTER KERIX_SOURCES EXCLUDE REGEX .*\/demo.cpp)
+file(GLOB_RECURSE KERIX_TESTS CONFIGURE_DEPENDS *.test.cpp)
+list(FILTER KERIX_SOURCES EXCLUDE REGEX .*\/demo\.cpp)
+list(FILTER KERIX_SOURCES EXCLUDE REGEX .*\.test\.cpp)
 
 # concrete binary dependencies
 set(KERIX_LIBRARIES
     Boost::compat
+    doctest::doctest
 )
 
 list(APPEND KERIX_DEFINES
     KERIX_DUMMY
 )
+
+if (NOT KERIX_TEST)
+    list(APPEND KERIX_DEFINES
+        DOCTEST_CONFIG_DISABLE
+    )
+endif()
 
 define_endianness()
 define_system()
@@ -24,26 +33,42 @@ make_option_defines()
 list(APPEND PROJECT_LIBRARIES ${KERIX_LIBRARIES})
 set(PROJECT_LIBRARIES ${PROJECT_LIBRARIES} PARENT_SCOPE)
 
-add_library(kerix ${KERIX_SOURCES} ${KERIX_HEADERS})
+add_library(kerix_common INTERFACE)
 
-target_compile_features(kerix PUBLIC cxx_std_23 c_std_11)
+target_compile_features(kerix_common INTERFACE cxx_std_23 c_std_11)
+target_include_directories(kerix_common INTERFACE ${PROJECT_SOURCE_DIR})
 
-target_include_directories(kerix PUBLIC ${PROJECT_SOURCE_DIR})
+target_compile_definitions(kerix_common INTERFACE ${KERIX_DEFINES})
 
-target_compile_definitions(kerix PUBLIC ${KERIX_DEFINES})
-
-target_link_libraries(kerix PUBLIC ${KERIX_LIBRARIES})
+target_link_libraries(kerix_common INTERFACE ${KERIX_LIBRARIES})
 
 if(MSVC)
-    target_compile_options(kerix PUBLIC /W4)
+    target_compile_options(kerix_common INTERFACE /W4)
 else()
-    target_compile_options(kerix PUBLIC -Wall -Wextra -fno-char8_t)
+    target_compile_options(kerix_common INTERFACE -Wall -Wextra -fno-char8_t)
 endif()
+
+add_library(kerix ${KERIX_SOURCES} ${KERIX_HEADERS})
+target_link_libraries(kerix PUBLIC kerix_common)
+target_compile_definitions(kerix INTERFACE DOCTEST_CONFIG_DISABLE)
 
 set_compile_commands_copy()
 
 add_executable(demo demo.cpp)
 target_link_libraries(demo kerix)
+
+if (KERIX_TEST)
+    add_executable(testbin ${KERIX_TESTS} ${KERIX_SOURCES} ${KERIX_HEADERS})
+    target_link_libraries(testbin kerix_common doctest_with_main)
+
+    add_custom_target(
+        test
+        COMMAND "$<TARGET_FILE:testbin>"
+        DEPENDS testbin
+        VERBATIM)
+
+endif()
+
 
 #if(BUILD_TESTING)
 #include(${PROJECT_SOURCE_DIR}/extern/doctest-2.4.11/scripts/cmake/doctest.cmake)

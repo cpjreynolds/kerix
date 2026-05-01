@@ -14,32 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <print>
-
 #include <kerix/thunk.hpp>
 
-namespace kerix {
-
-struct Foo {
-
-    void do_thing(int val) const { std::println("in do_thing with {}", val); }
-};
-
-struct Bar {
-    // signal<void(int)> merp;
-};
-
-} // namespace kerix
-
-using kerix::Bar;
-using kerix::Foo;
-
-int main()
+int stub()
 {
-    const Foo* f = new Foo;
-    Bar b;
-
-    kerix::thunk x(&Foo::do_thing, f);
-
-    delete f;
+    return 42;
 }

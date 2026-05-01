@@ -14,32 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <print>
+#ifndef KERIX_SIGNAL_HPP
+#define KERIX_SIGNAL_HPP
 
 #include <kerix/thunk.hpp>
 
 namespace kerix {
 
-struct Foo {
+template<typename>
+class signal;
 
-    void do_thing(int val) const { std::println("in do_thing with {}", val); }
 };
 
-struct Bar {
-    // signal<void(int)> merp;
-};
-
-} // namespace kerix
-
-using kerix::Bar;
-using kerix::Foo;
-
-int main()
-{
-    const Foo* f = new Foo;
-    Bar b;
-
-    kerix::thunk x(&Foo::do_thing, f);
-
-    delete f;
-}
+#endif
